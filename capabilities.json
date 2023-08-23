@@ -1,0 +1,55 @@
+{
+    "dataRoles": [
+        {
+            "displayName": "Text",
+            "name": "text",
+            "kind": "GroupingOrMeasure"
+        }
+    ],
+    "objects": {
+        "formatting": {
+            "properties": {
+                "fontSize": {
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "fontFamily": {
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "fontColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "backgroundColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "dataViewMappings": [
+        {
+            "single": {
+                "role": "text"
+            }
+        }
+    ],
+    "privileges": []
+}
