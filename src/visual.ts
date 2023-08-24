@@ -1,4 +1,3 @@
-
 import powerbi from "powerbi-visuals-api";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import "./../style/visual.less";
@@ -16,15 +15,17 @@ export class Visual implements IVisual {
     private readonly target: HTMLElement;
     private readonly formattingSettingsService: FormattingSettingsService;
     private readonly converter: Converter;
+    private readonly host: powerbi.extensibility.visual.IVisualHost;
 
     constructor(options: VisualConstructorOptions) {
+        this.host = options.host;
         this.formattingSettingsService = new FormattingSettingsService();
         const container = document.createElement("div");
         container.classList.add("container");
         options.element.appendChild(container);
         this.target = container;
         this.converter = new Converter();
-        this.converter.setFlavor("github")
+        this.converter.setFlavor("github");
     }
 
     public update(options: VisualUpdateOptions) {
@@ -46,6 +47,20 @@ export class Visual implements IVisual {
 
             // eslint-disable-next-line powerbi-visuals/no-inner-outer-html
             this.target.innerHTML = html;
+
+            // Power BI does not allow visuals to open links directly.
+            // We need to use the host to open links.
+            const links = this.target.querySelectorAll("a");
+
+            for (const link of Array.from(links)) {
+                link.addEventListener("click", (event) => {
+                    // Prevent the link from opening in the iframe.
+                    event.preventDefault();
+
+                    // Open the link using the host.
+                    this.host.launchUrl(link.getAttribute("href"));
+                });
+            }
         }
     }
 
