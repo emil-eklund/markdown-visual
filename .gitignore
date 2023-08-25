@@ -49,3 +49,4 @@ yarn-error.log*
 .tmp
 
 webpack.statistics.dev.html
+webpack.statistics.prod.html
