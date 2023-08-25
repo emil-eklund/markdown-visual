@@ -9,14 +9,14 @@ class FormatCardSettings extends FormattingSettingsCard {
     fontSize = new formattingSettings.NumUpDown({
         name: "fontSize",
         displayName: "Text Size",
-        value: 12
+        value: 14
     });
 
     fontColor = new formattingSettings.ColorPicker({
         name: "fontColor",
         displayName: "Text Color",
-        value: { value: "#000000" },
-        defaultColor: { value: "#000000" },
+        value: { value: "#1F2328" },
+        defaultColor: { value: "#1F2328" },
         isNoFillItemSupported: false
     });
 
@@ -29,7 +29,7 @@ class FormatCardSettings extends FormattingSettingsCard {
     });
 
     fontFamily = new formattingSettings.FontPicker({
-        value: "Arial",
+        value: "Segoe UI",
         name: "fontFamily",
         displayName: "Font Family"
     });

@@ -12,3 +12,111 @@ ul li {
 ol li {
     list-style: decimal;
 }
+
+// Styles to match github styling
+.github {
+
+    @mono-space: ui-monospace,
+    SFMono-Regular,
+    SF Mono,
+    Menlo,
+    Consolas,
+    Liberation Mono,
+    monospace;
+
+    @light-background: rgb(246, 248, 250);
+    @dark-background: rgba(175, 184, 193, 0.2);
+
+    line-height: 1.5;
+    word-wrap: break-word;
+
+    &>*:first-child {
+        margin-top: 0 !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin-top: 24px;
+        margin-bottom: 16px;
+        font-weight: 600;
+        line-height: 1.25;
+    }
+
+    p,
+    blockquote,
+    ul,
+    ol,
+    dl,
+    table,
+    pre,
+    details {
+        margin-top: 0;
+        margin-bottom: 16px;
+    }
+
+    ul,
+    ol {
+        padding-left: 2em;
+    }
+
+    kbd {
+        padding: 3px 5px;
+        font: @mono-space;
+        font-size: 11px;
+        color: rgb(31, 35, 40);
+        background-color: @light-background;
+        border: 1px solid @dark-background;
+        border-radius: 6px;
+        box-shadow: inset 0px -1px 0px 0px @dark-background;
+    }
+
+    code {
+        padding: .2em .4em;
+        margin: 0;
+        font: @mono-space;
+        font-size: 85%;
+        white-space: break-spaces;
+        background-color: @dark-background;
+        border-radius: 6px;
+    }
+
+    pre {
+        background-color: @light-background;
+        padding: 16px;
+        border-radius: 6px;
+        overflow: auto;
+
+        code {
+            background-color: initial;
+        }
+    }
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        margin-bottom: 16px;
+        border: 1px solid @dark-background;
+        border-radius: 6px;
+
+        th,
+        td {
+            padding: 6px 13px;
+            border: 1px solid @dark-background;
+        }
+
+        th {
+            font-weight: 600;
+        }
+    }
+
+    blockquote {
+        margin: 0;
+        padding: 0 1em;
+        color: #6a737d;
+        border-left: 0.25em solid #dfe2e5;
+    }
+}
