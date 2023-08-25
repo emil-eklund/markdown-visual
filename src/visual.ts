@@ -21,7 +21,7 @@ export class Visual implements IVisual {
         this.host = options.host;
         this.formattingSettingsService = new FormattingSettingsService();
         const container = document.createElement("div");
-        container.classList.add("container");
+        container.classList.add("container", "github");
         options.element.appendChild(container);
         this.target = container;
         this.converter = new Converter();
