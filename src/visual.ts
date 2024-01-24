@@ -8,6 +8,7 @@ import IVisual = powerbi.extensibility.visual.IVisual;
 
 import { VisualFormattingSettingsModel } from "./settings";
 import { Converter } from "showdown";
+import * as DOMPurify from 'dompurify';
 
 export class Visual implements IVisual {
     private formattingSettings: VisualFormattingSettingsModel;
@@ -43,10 +44,11 @@ export class Visual implements IVisual {
             this.target.style.color = this.formattingSettings.formatCard.fontColor.value.value;
             this.target.style.backgroundColor = this.formattingSettings.formatCard.backgroundColor.value.value;
 
+            // Convert the markdown to HTML.
             const html = this.converter.makeHtml(value);
 
-            // eslint-disable-next-line powerbi-visuals/no-inner-outer-html
-            this.target.innerHTML = html;
+            // Set the HTML content of the target element.
+            this.sanitizeAndSetHtml(html);
 
             // Power BI does not allow visuals to open links directly.
             // We need to use the host to open links.
@@ -62,6 +64,20 @@ export class Visual implements IVisual {
                 });
             }
         }
+    }
+
+    /**
+     * Sets the HTML content of the target element.
+     * Passes the HTML content through the sanitizer to make sure that it does not contain any malicious content.
+     * 
+     * @param html The HTML content to set.
+     */
+    private sanitizeAndSetHtml(html: string) {
+        const sanitizedHtml = DOMPurify.sanitize(html);
+
+        // NEVER assign anything to innerHTML that did not come from the sanitizer.
+        // eslint-disable-next-line powerbi-visuals/no-inner-outer-html
+        this.target.innerHTML = sanitizedHtml;
     }
 
     /**
