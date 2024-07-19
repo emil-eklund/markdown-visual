@@ -80,12 +80,12 @@ export class Visual implements IVisual {
      * 
      * @param html The HTML content to set.
      */
-    private sanitizeAndSetHtml(html: string, target = this.target) {
+    private sanitizeAndSetHtml(html: string) {
         const sanitizedHtml = DOMPurify.sanitize(html);
 
         // NEVER assign anything to innerHTML that did not come from the sanitizer.
         // eslint-disable-next-line powerbi-visuals/no-inner-outer-html
-        target.innerHTML = sanitizedHtml;
+        this.target.innerHTML = sanitizedHtml;
     }
 
     /**
