@@ -13,6 +13,11 @@ ol li {
     list-style: decimal;
 }
 
+.mermaid-diagram {
+    // Center the diagram
+    text-align: center;
+}
+
 // Styles to match github styling
 .github {
 
@@ -85,7 +90,10 @@ ol li {
     }
 
     pre {
-        background-color: @light-background;
+        &:not(.mermaid-diagram) {
+            background-color: @light-background;
+        }
+        
         padding: 16px;
         border-radius: 6px;
         overflow: auto;
