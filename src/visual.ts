@@ -29,7 +29,6 @@ export class Visual implements IVisual {
         this.converter = new Converter();
         this.converter.setFlavor("github");
 
-        // Initialize Mermaid
         mermaid.initialize({
             startOnLoad: false
         });
