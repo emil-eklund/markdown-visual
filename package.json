@@ -15,8 +15,8 @@
     },
     "dependencies": {
         "@types/showdown": "^2.0.1",
-        "dompurify": "^3.0.8",
-        "mermaid": "^9.4.3",
+        "dompurify": "^3.1.7",
+        "mermaid": "^11.3.0",
         "powerbi-visuals-api": "~5.3.0",
         "powerbi-visuals-tools": "^5.1.0",
         "powerbi-visuals-utils-formattingmodel": "5.0.0",
