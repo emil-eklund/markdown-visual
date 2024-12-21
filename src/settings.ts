@@ -9,12 +9,14 @@ class FormatCardSettings extends FormattingSettingsCard {
     fontSize = new formattingSettings.NumUpDown({
         name: "fontSize",
         displayName: "Text Size",
+        displayNameKey: "F_FontSize",
         value: 14
     });
 
     fontColor = new formattingSettings.ColorPicker({
         name: "fontColor",
         displayName: "Text Color",
+        displayNameKey: "F_FontColor",
         value: { value: "#1F2328" },
         defaultColor: { value: "#1F2328" },
         isNoFillItemSupported: false
@@ -23,6 +25,7 @@ class FormatCardSettings extends FormattingSettingsCard {
     backgroundColor = new formattingSettings.ColorPicker({
         name: "backgroundColor",
         displayName: "Background Color",
+        displayNameKey: "F_BackgroundColor",
         defaultColor: { value: "#ffffff" },
         value: { value: "#ffffff" },
         isNoFillItemSupported: true
@@ -31,11 +34,13 @@ class FormatCardSettings extends FormattingSettingsCard {
     fontFamily = new formattingSettings.FontPicker({
         value: "Segoe UI",
         name: "fontFamily",
-        displayName: "Font Family"
+        displayName: "Font Family",
+        displayNameKey: "F_FontFamily"
     });
 
     name: string = "formatting";
     displayName: string = "Format";
+    displayNameKey: string = "F_Formatting";
     slices: Array<FormattingSettingsSlice> = [
         this.fontSize,
         this.fontFamily,
