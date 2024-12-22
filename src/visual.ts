@@ -5,6 +5,7 @@ import "./../style/visual.less";
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
+import IVisualEventService = powerbi.extensibility.IVisualEventService;
 
 import { VisualFormattingSettingsModel } from "./settings";
 import { Converter } from "showdown";
@@ -18,6 +19,7 @@ export class Visual implements IVisual {
     private readonly formattingSettingsService: FormattingSettingsService;
     private readonly converter: Converter;
     private readonly host: powerbi.extensibility.visual.IVisualHost;
+    private events: IVisualEventService;
 
     constructor(options: VisualConstructorOptions) {
         this.host = options.host;
@@ -28,6 +30,7 @@ export class Visual implements IVisual {
         this.target = container;
         this.converter = new Converter();
         this.converter.setFlavor("github");
+        this.events = options.host.eventService;
 
         mermaid.initialize({
             startOnLoad: false
@@ -35,12 +38,18 @@ export class Visual implements IVisual {
     }
 
     public update(options: VisualUpdateOptions) {
+        // indicates that the rendering as started
+        this.events.renderingStarted(options);
+
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(VisualFormattingSettingsModel, options.dataViews);
 
         if (hasFlag(options.type, powerbi.VisualUpdateType.Data)) {
             const value = options.dataViews[0].single.value;
 
             if (typeof value !== 'string') {
+                // informs that the visual has finished rendering
+                this.events.renderingFinished(options);
+
                 return;
             }
 
@@ -72,6 +81,9 @@ export class Visual implements IVisual {
                 });
             }
         }
+
+        // informs that the visual has finished rendering
+        this.events.renderingFinished(options);
     }
 
     /**
