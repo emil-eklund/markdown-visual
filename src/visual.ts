@@ -8,7 +8,7 @@ import IVisual = powerbi.extensibility.visual.IVisual;
 
 import { VisualFormattingSettingsModel } from "./settings";
 import { Converter } from "showdown";
-import * as DOMPurify from 'dompurify';
+import DOMPurify from 'dompurify';
 import mermaid from 'mermaid';
 
 export class Visual implements IVisual {
