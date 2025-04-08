@@ -12,8 +12,12 @@ import { Converter } from "showdown";
 import DOMPurify from 'dompurify';
 import mermaid from 'mermaid';
 
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+
 export class Visual implements IVisual {
     private formattingSettings: VisualFormattingSettingsModel;
+
+    private localizationManager: ILocalizationManager;
 
     private readonly target: HTMLElement;
     private readonly formattingSettingsService: FormattingSettingsService;
@@ -23,7 +27,8 @@ export class Visual implements IVisual {
 
     constructor(options: VisualConstructorOptions) {
         this.host = options.host;
-        this.formattingSettingsService = new FormattingSettingsService();
+        this.localizationManager = options.host.createLocalizationManager();
+        this.formattingSettingsService = new FormattingSettingsService(this.localizationManager);
         const container = document.createElement("div");
         container.classList.add("container", "github");
         options.element.appendChild(container);
