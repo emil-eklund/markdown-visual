@@ -52,6 +52,10 @@ It supports various markdown features such as **bold**, *italic*, and [links](ht
 - Supported
 ```
 
+We personally use markdown-visual to display the contents of GitHub issues for stakeholders. The example report "github-issues.pbix" demonstrates how to fetch and present GitHub issue data in Power BI.
+
+![image](https://github.com/user-attachments/assets/156cd4cc-58d9-4794-bcc0-182c2b5a4706)
+
 ## Contributing
 
 We welcome contributions to markdown-visual. If you'd like to contribute, please follow these guidelines:
