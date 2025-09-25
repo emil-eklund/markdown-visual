@@ -1,0 +1,153 @@
+table Issues
+	lineageTag: a102582d-f3f2-4ab6-a3af-a2accaab9c3f
+
+	measure 'Selected Measure Body' = SELECTEDVALUE(Issues[Body], "## Please select an issue to see details")
+		lineageTag: 288a7cab-f1b6-41ff-8329-2686d9cc1982
+
+	measure 'Selected Measure Title' = SELECTEDVALUE(Issues[title], "")
+		lineageTag: 6033f68c-263c-4501-b56d-7ac5fd92df90
+
+	column number
+		dataType: string
+		lineageTag: 5ad2754f-bfe7-4134-97f4-aaca3f11e3d8
+		summarizeBy: none
+		sourceColumn: number
+
+		annotation SummarizationSetBy = Automatic
+
+	column title
+		dataType: string
+		lineageTag: 5e6246ac-cba1-4a0f-b5b4-e39d2d9586b4
+		summarizeBy: none
+		sourceColumn: title
+
+		annotation SummarizationSetBy = Automatic
+
+	column user
+		dataType: string
+		lineageTag: 396b00bb-748b-4021-951f-c1d2ac92d7d5
+		summarizeBy: none
+		sourceColumn: user
+
+		annotation SummarizationSetBy = Automatic
+
+	column userid
+		dataType: string
+		lineageTag: 305d9761-c7e8-45e9-9d4d-690d15d47dbb
+		summarizeBy: none
+		sourceColumn: userid
+
+		annotation SummarizationSetBy = Automatic
+
+	column useravatarurl
+		dataType: string
+		lineageTag: 558c87ab-afa4-4d7f-a220-8d5ed006c574
+		summarizeBy: none
+		sourceColumn: useravatarurl
+
+		annotation SummarizationSetBy = Automatic
+
+	column state
+		dataType: string
+		lineageTag: cabc4e0a-d52c-4451-b527-78901e3be3f6
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = Automatic
+
+	column locked
+		dataType: string
+		lineageTag: fd4e9baa-6bff-4f98-9af2-cbfce20a9dbd
+		summarizeBy: none
+		sourceColumn: locked
+
+		annotation SummarizationSetBy = Automatic
+
+	column assignee
+		dataType: string
+		lineageTag: a6a94737-fbad-43cf-9379-3495ab4bd560
+		summarizeBy: none
+		sourceColumn: assignee
+
+		annotation SummarizationSetBy = Automatic
+
+	column milestone
+		dataType: string
+		lineageTag: 174eb949-aa41-41aa-9399-7c371fd1d22f
+		summarizeBy: none
+		sourceColumn: milestone
+
+		annotation SummarizationSetBy = Automatic
+
+	column comments
+		dataType: string
+		lineageTag: 4e4db69e-22cc-4c8b-8ba4-c674d8750a9c
+		summarizeBy: none
+		sourceColumn: comments
+
+		annotation SummarizationSetBy = Automatic
+
+	column created_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 4cb84989-4e96-4120-89e5-96e5be9c3950
+		summarizeBy: none
+		sourceColumn: created_at
+
+		annotation SummarizationSetBy = Automatic
+
+	column updated_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b2637efe-849e-45ef-90d8-9b416231d38f
+		summarizeBy: none
+		sourceColumn: updated_at
+
+		annotation SummarizationSetBy = Automatic
+
+	column closed_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: cb452a8a-a152-4174-a56c-7aa6319c360b
+		summarizeBy: none
+		sourceColumn: closed_at
+
+		annotation SummarizationSetBy = Automatic
+
+	column body
+		dataType: string
+		lineageTag: 2ee129e8-4348-486f-a20c-ae00a5ba92d7
+		summarizeBy: none
+		sourceColumn: body
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Closed At' = IF (ISBLANK(Issues[closed_at]), BLANK(), FORMAT(Issues[closed_at], "Short Date"))
+		lineageTag: 783c14b5-f1d0-49f2-890b-81f9cd9e932c
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column URL
+		dataType: string
+		lineageTag: 1031d39b-5a3f-4183-b4a0-e3e85edd9c9c
+		dataCategory: WebUrl
+		summarizeBy: none
+		sourceColumn: URL
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Issues = m
+		mode: import
+		source =
+				let
+				    Source = Github.Tables("emil-eklund", "markdown-visual"),
+				    issues = Source{[Key="issues"]}[Data],
+				    #"Inserted Merged Column" = Table.AddColumn(issues, "URL", each Text.Combine({"https://github.com/", [user], "/markdown-visual/issues/", Text.From([number], "en-GB")}), type text)
+				in
+				    #"Inserted Merged Column"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

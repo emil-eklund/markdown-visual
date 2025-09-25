@@ -1,0 +1,27 @@
+table Measure
+	lineageTag: a5142c23-c78b-4f07-985c-c4e3ce7c0034
+
+	measure '# of Closed Issues' = CALCULATE(COUNT(Issues[number]), ALL(Issues), Issues[state] = "closed")
+		formatString: 0
+		lineageTag: 068f2d0b-7747-4df1-b481-01a10449946f
+
+	measure '# of Open Issues' = CALCULATE(COUNT(Issues[number]), ALL(Issues), Issues[state] = "open")
+		formatString: 0
+		lineageTag: 416663fb-376b-4b53-be39-aaa7570a79a5
+
+	column Value
+		isHidden
+		formatString: 0
+		lineageTag: 4691950c-1f35-41f8-b05f-f1141255db3f
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Measure = calculated
+		mode: import
+		source = { BLANK() }
+
+	annotation PBI_Id = 84c194d594714ec590aa827ccc7ce228
+
