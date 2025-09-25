@@ -4,7 +4,7 @@
         "displayName": "markdown",
         "guid": "markdown094043B111794F2C815A4B97BA2D325B",
         "visualClassName": "Visual",
-        "version": "1.0.7.0",
+        "version": "1.0.8.0",
         "description": "Displays markdown text",
         "supportUrl": "https://github.com/emil-eklund/markdown-visual/issues",
         "gitHubUrl": "https://github.com/emil-eklund/markdown-visual"
@@ -22,5 +22,5 @@
     "capabilities": "capabilities.json",
     "dependencies": null,
     "stringResources": [],
-    "version": "1.0.7.0"
+    "version": "1.0.8.0"
 }

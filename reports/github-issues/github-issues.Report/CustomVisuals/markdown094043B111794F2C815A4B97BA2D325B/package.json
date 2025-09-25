@@ -1,0 +1,29 @@
+{
+  "version": "1.0.8.0",
+  "author": {
+    "name": "Emil Eklund",
+    "email": "9718074+emil-eklund@users.noreply.github.com"
+  },
+  "resources": [
+    {
+      "resourceId": "rId0",
+      "sourceType": 5,
+      "file": "resources/markdown094043B111794F2C815A4B97BA2D325B.pbiviz.json"
+    }
+  ],
+  "visual": {
+    "guid": "markdown094043B111794F2C815A4B97BA2D325B",
+    "name": "markdown",
+    "displayName": "markdown",
+    "version": "1.0.8.0",
+    "description": "Displays markdown text",
+    "supportUrl": "https://github.com/emil-eklund/markdown-visual/issues",
+    "gitHubUrl": "https://github.com/emil-eklund/markdown-visual",
+    "visualClassName": "Visual"
+  },
+  "metadata": {
+    "pbivizjson": {
+      "resourceId": "rId0"
+    }
+  }
+}

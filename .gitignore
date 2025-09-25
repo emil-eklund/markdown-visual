@@ -50,3 +50,7 @@ yarn-error.log*
 
 webpack.statistics.dev.html
 webpack.statistics.prod.html
+
+# PBIP files
+**/.pbi/localSettings.json
+**/.pbi/cache.abf

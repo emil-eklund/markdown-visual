@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "github-issues"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "f89e897f-5d18-4320-9205-c8381c792804"
+  }
+}
