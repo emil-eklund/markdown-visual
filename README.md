@@ -55,6 +55,23 @@ It supports various markdown features such as **bold**, *italic*, and [links](ht
 We personally use markdown-visual to display the contents of GitHub issues for stakeholders. The example report "github-issues.pbix" demonstrates how to fetch and present GitHub issue data in Power BI.
 
 ![image](https://github.com/user-attachments/assets/156cd4cc-58d9-4794-bcc0-182c2b5a4706)
+### Development
+
+If you want to run the visual locally or create a `.pbiviz` package, the project now relies on the [`powerbi-visuals-webpack-plugin`](https://github.com/microsoft/powerbi-visuals-webpack-plugin).
+
+```pwsh
+# install once
+npm install
+
+# start the HTTPS dev server on https://localhost:8080
+npm run start
+
+# create an optimized .pbiviz package in the dist folder
+npm run package
+
+# optional: install a trusted development certificate (only required once)
+
+```
 
 ## Contributing
 
