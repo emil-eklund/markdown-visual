@@ -1,7 +1,7 @@
 {
     "name": "markdown-visual",
     "description": "A markdown visualizer for Power BI",
-    "version": "1.0.7.0",
+    "version": "1.0.7.1",
     "repository": {
         "type": "git",
         "url": "https://github.com/emil-eklund/markdown-visual/"
