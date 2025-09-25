@@ -10,7 +10,7 @@ import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import { VisualFormattingSettingsModel } from "./settings";
 import { Converter } from "showdown";
 import DOMPurify from 'dompurify';
-import mermaid from 'mermaid';
+import mermaid, { RenderResult } from 'mermaid';
 
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
@@ -46,15 +46,20 @@ export class Visual implements IVisual {
         // indicates that the rendering as started
         this.events.renderingStarted(options);
 
-        this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(VisualFormattingSettingsModel, options.dataViews);
+        void this.handleUpdate(options);
+    }
 
-        if (hasFlag(options.type, powerbi.VisualUpdateType.Data)) {
-            const value = options.dataViews[0].single.value;
+    private async handleUpdate(options: VisualUpdateOptions): Promise<void> {
+        try {
+            this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(VisualFormattingSettingsModel, options.dataViews);
 
-            if (typeof value !== 'string') {
-                // informs that the visual has finished rendering
-                this.events.renderingFinished(options);
+            if (!hasFlag(options.type, powerbi.VisualUpdateType.Data)) {
+                return;
+            }
 
+            const value = options.dataViews?.[0]?.single?.value;
+
+            if (typeof value !== "string") {
                 return;
             }
 
@@ -70,25 +75,15 @@ export class Visual implements IVisual {
             this.sanitizeAndSetHtml(html);
 
             // Render Mermaid diagrams if present
-            this.renderMermaidDiagrams();
+            await this.renderMermaidDiagrams();
 
-            // Power BI does not allow visuals to open links directly.
-            // We need to use the host to open links.
-            const links = this.target.querySelectorAll("a");
-
-            for (const link of Array.from(links)) {
-                link.addEventListener("click", (event) => {
-                    // Prevent the link from opening in the iframe.
-                    event.preventDefault();
-
-                    // Open the link using the host.
-                    this.host.launchUrl(link.getAttribute("href"));
-                });
-            }
+            this.registerLinkHandlers();
+        } catch (error) {
+            console.error("Failed to update visual", error);
+        } finally {
+            // informs that the visual has finished rendering
+            this.events.renderingFinished(options);
         }
-
-        // informs that the visual has finished rendering
-        this.events.renderingFinished(options);
     }
 
     /**
@@ -108,27 +103,88 @@ export class Visual implements IVisual {
     /**
      * Renders Mermaid diagrams within the target element.
      */
-    private renderMermaidDiagrams() {
-        const mermaidBlocks = this.target.querySelectorAll('code.language-mermaid');
+    private async renderMermaidDiagrams(): Promise<void> {
+        const mermaidBlocks = Array.from(this.target.querySelectorAll<HTMLElement>('code.language-mermaid'));
 
-        mermaidBlocks.forEach((block, index) => {
+        const renderTasks = mermaidBlocks.map(async (block, index) => {
             const mermaidCode = block.textContent;
 
-            const svg = mermaid.render(`mermaid-${index}`, mermaidCode);
-            const mermaidDiv = document.createElement('div');
+            if (!mermaidCode || mermaidCode.trim().length === 0) {
+                return;
+            }
 
-            // mermaid-js produces elements that the sanitizer does not recognize as safe,
-            // but it's all SVG content, so we can safely bypass the sanitizer here.
-            // eslint-disable-next-line powerbi-visuals/no-inner-outer-html
-            mermaidDiv.innerHTML = svg;
+            try {
+                const renderResult = await mermaid.render(`mermaid-${index}`, mermaidCode);
+                const svgOutput = this.extractMermaidSvg(renderResult);
 
-            block.replaceWith(mermaidDiv);
+                if (!svgOutput) {
+                    return;
+                }
+                const mermaidDiv = document.createElement('div');
 
-            // Add the mermaid-diagram class to the parent pre tag so we can center the
-            // diagram and remove background color.
-            const preTag = mermaidDiv.parentElement;
-            preTag.classList.add('mermaid-diagram');
+                // mermaid-js produces elements that the sanitizer does not recognize as safe,
+                // but it's all SVG content, so we can safely bypass the sanitizer here.
+                // eslint-disable-next-line powerbi-visuals/no-inner-outer-html
+                mermaidDiv.innerHTML = svgOutput.svg;
+
+                block.replaceWith(mermaidDiv);
+
+                // Add the mermaid-diagram class to the parent pre tag so we can center the
+                // diagram and remove background color.
+                mermaidDiv.parentElement?.classList.add('mermaid-diagram');
+
+                svgOutput.bindFunctions?.(mermaidDiv);
+            } catch (error) {
+                console.error('Failed to render mermaid diagram', error);
+            }
         });
+
+        await Promise.all(renderTasks);
+    }
+
+    private extractMermaidSvg(renderResult: RenderResult): { svg: string; bindFunctions?: (element: Element) => void } | null {
+        if (typeof renderResult === 'string') {
+            return { svg: renderResult };
+        }
+
+        if (typeof renderResult === 'object' && renderResult !== null) {
+            const candidate = renderResult as { svg?: unknown; bindFunctions?: unknown };
+            if (typeof candidate.svg === 'string') {
+                let bindFunctions: ((element: Element) => void) | undefined;
+
+                if (typeof candidate.bindFunctions === 'function') {
+                    const binder = candidate.bindFunctions;
+                    bindFunctions = (element: Element) => {
+                        binder.call(candidate, element);
+                    };
+                }
+
+                return {
+                    svg: candidate.svg,
+                    bindFunctions
+                };
+            }
+        }
+
+        return null;
+    }
+
+    private registerLinkHandlers() {
+        const links = Array.from(this.target.querySelectorAll<HTMLAnchorElement>('a'));
+
+        for (const link of links) {
+            link.addEventListener('click', (event) => {
+                // Prevent the link from opening in the iframe.
+                event.preventDefault();
+
+                const href = link.getAttribute('href');
+
+                if (href) {
+                    // Open the link using the host.
+                    this.host.launchUrl(href);
+                }
+            });
+        }
     }
 
     /**

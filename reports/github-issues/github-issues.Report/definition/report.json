@@ -71,6 +71,7 @@
     "useEnhancedTooltips": true,
     "useDefaultAggregateDisplayName": true,
     "enableDeveloperMode": true,
+    "queryLimitOption": "None",
     "customMemoryLimit": "1048576",
     "customTimeoutLimit": "225"
   }
