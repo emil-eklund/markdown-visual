@@ -109,64 +109,33 @@ export class Visual implements IVisual {
         const renderTasks = mermaidBlocks.map(async (block, index) => {
             const mermaidCode = block.textContent;
 
-            if (!mermaidCode || mermaidCode.trim().length === 0) {
+            if (mermaidCode.trim().length === 0) {
                 return;
             }
 
             try {
                 const renderResult = await mermaid.render(`mermaid-${index}`, mermaidCode);
-                const svgOutput = this.extractMermaidSvg(renderResult);
 
-                if (!svgOutput) {
-                    return;
-                }
                 const mermaidDiv = document.createElement('div');
 
                 // mermaid-js produces elements that the sanitizer does not recognize as safe,
                 // but it's all SVG content, so we can safely bypass the sanitizer here.
                 // eslint-disable-next-line powerbi-visuals/no-inner-outer-html
-                mermaidDiv.innerHTML = svgOutput.svg;
+                mermaidDiv.innerHTML = renderResult.svg;
 
                 block.replaceWith(mermaidDiv);
 
                 // Add the mermaid-diagram class to the parent pre tag so we can center the
                 // diagram and remove background color.
-                mermaidDiv.parentElement?.classList.add('mermaid-diagram');
+                mermaidDiv.parentElement.classList.add('mermaid-diagram');
 
-                svgOutput.bindFunctions?.(mermaidDiv);
+                renderResult.bindFunctions?.(mermaidDiv);
             } catch (error) {
                 console.error('Failed to render mermaid diagram', error);
             }
         });
 
         await Promise.all(renderTasks);
-    }
-
-    private extractMermaidSvg(renderResult: RenderResult): { svg: string; bindFunctions?: (element: Element) => void } | null {
-        if (typeof renderResult === 'string') {
-            return { svg: renderResult };
-        }
-
-        if (typeof renderResult === 'object' && renderResult !== null) {
-            const candidate = renderResult as { svg?: unknown; bindFunctions?: unknown };
-            if (typeof candidate.svg === 'string') {
-                let bindFunctions: ((element: Element) => void) | undefined;
-
-                if (typeof candidate.bindFunctions === 'function') {
-                    const binder = candidate.bindFunctions;
-                    bindFunctions = (element: Element) => {
-                        binder.call(candidate, element);
-                    };
-                }
-
-                return {
-                    svg: candidate.svg,
-                    bindFunctions
-                };
-            }
-        }
-
-        return null;
     }
 
     private registerLinkHandlers() {
