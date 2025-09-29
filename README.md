@@ -4,6 +4,7 @@
 - [Features](#features)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
+- [Privacy](#privacy)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -72,6 +73,16 @@ npm run package
 # optional: install a trusted development certificate (only required once)
 
 ```
+
+## Privacy
+
+This visual processes markdown content locally within your Power BI environment and does not send data to external servers. For detailed information about data handling, security measures, and your privacy rights, please see our comprehensive [Privacy Policy](PRIVACY.md).
+
+Key privacy highlights:
+- **Local Processing Only**: All markdown conversion and rendering occurs in your browser
+- **No Data Storage**: No persistent storage of your content
+- **Content Sanitization**: HTML output is sanitized for security using DOMPurify
+- **No External Requests**: The visual does not communicate with external services
 
 ## Contributing
 
