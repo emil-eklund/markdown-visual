@@ -82,8 +82,8 @@ Key privacy highlights:
 - **Local Processing Only**: All markdown conversion and rendering occurs in your browser
 - **No Data Storage**: No persistent storage of your content
 - **Content Sanitization**: HTML output is sanitized for security using DOMPurify
-- **No External Requests**: The visual does not communicate with external services
-
+- **External Image Fetching**: If your markdown references images hosted externally (e.g., `![alt](https://example.com/image.png)`), your browser will fetch those images from the external hosts.
+- **No Other External Requests**: The visual itself does not send your data to external servers.
 ## Contributing
 
 We welcome contributions to markdown-visual. If you'd like to contribute, please follow these guidelines:
