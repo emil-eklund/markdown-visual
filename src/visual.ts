@@ -21,14 +21,13 @@ export class Visual implements IVisual {
 
     private localizationManager: ILocalizationManager;
 
-    private readonly target: HTMLDivElement;
+    private readonly target: HTMLElement;
     private readonly formattingSettingsService: FormattingSettingsService;
     private readonly converter: Converter;
     private readonly host: powerbi.extensibility.visual.IVisualHost;
     private readonly events: IVisualEventService;
     private readonly selectionManager: powerbi.extensibility.ISelectionManager;
-    private dataPointSelectionId?: ISelectionId;
-    private hasDataPoint: boolean;
+    private dataPointSelectionId: ISelectionId | undefined;
 
     private readonly handleContextMenu = (event: MouseEvent) => {
         event.preventDefault();
@@ -39,7 +38,7 @@ export class Visual implements IVisual {
             y: event.clientY
         };
 
-        const isDataPointTarget = this.hasDataPoint && event.target instanceof Node && this.target.contains(event.target);
+        const isDataPointTarget = this.dataPointSelectionId !== undefined && event.target instanceof Node && this.target.contains(event.target);
 
         if (isDataPointTarget && this.dataPointSelectionId) {
             this.selectionManager.showContextMenu([this.dataPointSelectionId], position);
@@ -60,7 +59,6 @@ export class Visual implements IVisual {
         this.converter = new Converter();
         this.converter.setFlavor("github");
         this.events = options.host.eventService;
-        this.hasDataPoint = false;
 
         this.target.addEventListener("contextmenu", this.handleContextMenu);
 
@@ -70,6 +68,8 @@ export class Visual implements IVisual {
     }
 
     public update(options: VisualUpdateOptions) {
+        this.dataPointSelectionId = undefined;
+
         // indicates that the rendering as started
         this.events.renderingStarted(options);
 
@@ -79,8 +79,6 @@ export class Visual implements IVisual {
     private async handleUpdate(options: VisualUpdateOptions): Promise<void> {
         try {
             this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(VisualFormattingSettingsModel, options.dataViews);
-            this.hasDataPoint = false;
-            this.dataPointSelectionId = undefined;
 
             if (!hasFlag(options.type, powerbi.VisualUpdateType.Data)) {
                 return;
@@ -97,8 +95,7 @@ export class Visual implements IVisual {
             this.target.style.color = this.formattingSettings.formatCard.fontColor.value.value;
             this.target.style.backgroundColor = this.formattingSettings.formatCard.backgroundColor.value.value;
 
-            this.dataPointSelectionId = this.createDataPointSelectionId(options.dataViews?.[0]);
-            this.hasDataPoint = !!this.dataPointSelectionId;
+            this.dataPointSelectionId = this.createDataPointSelectionId(options.dataViews[0]);
 
             // Convert the markdown to HTML.
             const html = this.converter.makeHtml(value);
@@ -159,7 +156,7 @@ export class Visual implements IVisual {
 
                 // Add the mermaid-diagram class to the parent pre tag so we can center the
                 // diagram and remove background color.
-                mermaidDiv.parentElement?.classList.add('mermaid-diagram');
+                mermaidDiv.parentElement.classList.add('mermaid-diagram');
 
                 renderResult.bindFunctions?.(mermaidDiv);
             } catch (error) {
@@ -196,13 +193,14 @@ export class Visual implements IVisual {
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
     }
 
-    private createDataPointSelectionId(dataView: powerbi.DataView | undefined): ISelectionId | undefined {
-        if (!dataView?.metadata?.columns?.length) {
+    private createDataPointSelectionId(dataView: powerbi.DataView): ISelectionId | undefined {
+        const firstColumn = dataView.metadata.columns[0];
+
+        if (firstColumn == null) {
             return undefined;
         }
 
         const selectionIdBuilder = this.host.createSelectionIdBuilder();
-        const firstColumn = dataView.metadata.columns[0];
 
         if (firstColumn.queryName) {
             selectionIdBuilder.withMeasure(firstColumn.queryName);
