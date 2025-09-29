@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last Updated**: December 2024
+**Last Updated**: September 2025
 
 ## Overview
 
@@ -35,8 +35,13 @@ During operation, the Visual generates:
 
 ### External Communications
 - **Link Handling**: When you click on links within the rendered markdown, they are opened through Power BI's secure link handling mechanism
+- **External Image Fetching**: The Visual may fetch external images referenced in markdown content (e.g., `![alt](https://example.com/image.png)`). When images are loaded from external sources:
+  - Image requests are made directly from your browser to the image host
+  - The Visual itself does not track or log these requests
+  - However, external image hosts may track image requests according to their own privacy policies
+  - Consider using local or trusted image sources for sensitive content
 - **No Analytics**: The Visual does not collect usage analytics or telemetry data
-- **No Third-party Integrations**: No data is shared with external services or APIs
+- **No Third-party Integrations**: No data is shared with external services or APIs beyond standard web image loading
 
 ## Security Measures
 
@@ -48,7 +53,8 @@ During operation, the Visual generates:
 ### Power BI Integration
 - The Visual operates within Power BI's security sandbox
 - All external link access is handled through Power BI's secure mechanisms
-- The Visual requires WebAccess privilege, which is managed by Power BI's permission system
+- The Visual requires WebAccess privilege to fetch external images referenced in markdown content
+- WebAccess permissions are managed by Power BI's permission system and may be restricted by administrators
 
 ## Your Data Rights
 
@@ -106,6 +112,8 @@ We may update this privacy policy from time to time. When we do:
 
 This Visual is provided as-is under the MIT License. While we implement security best practices, users should:
 - Review and validate any markdown content before using it in the Visual
+- Be aware that external images in markdown may be tracked by their respective hosts
+- Consider using local or trusted image sources for sensitive content
 - Follow their organization's data governance policies
 - Ensure compliance with applicable data protection regulations
 
