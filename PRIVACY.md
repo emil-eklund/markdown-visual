@@ -88,11 +88,6 @@ The Visual uses the following third-party libraries, all of which operate locall
 - No personal data is collected, stored, or transmitted by the Visual itself
 - Data protection compliance is primarily governed by your Power BI environment and data handling practices
 
-### Enterprise Security
-- The Visual operates within enterprise Power BI security policies
-- All security measures are implemented according to Microsoft Power BI security standards
-- No additional security vulnerabilities are introduced beyond standard web content rendering
-
 ## Contact Information
 
 For questions about this privacy policy or the Visual's data handling:
