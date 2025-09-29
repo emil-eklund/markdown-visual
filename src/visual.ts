@@ -17,7 +17,7 @@ import IPoint = powerbi.extensibility.IPoint;
 import ISelectionId = powerbi.visuals.ISelectionId;
 
 export class Visual implements IVisual {
-    
+
     private dataPointSelectionId: ISelectionId | undefined;
     private formattingSettings: VisualFormattingSettingsModel | undefined;
 
@@ -40,7 +40,7 @@ export class Visual implements IVisual {
 
         const isDataPointTarget = this.dataPointSelectionId !== undefined && event.target instanceof Node && this.target.contains(event.target);
 
-        if (isDataPointTarget && this.dataPointSelectionId) {
+        if (isDataPointTarget) {
             this.selectionManager.showContextMenu([this.dataPointSelectionId], position);
         } else {
             this.selectionManager.showContextMenu([], position);
