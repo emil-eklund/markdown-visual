@@ -21,8 +21,7 @@ export class Visual implements IVisual {
 
     private localizationManager: ILocalizationManager;
 
-    private readonly target: HTMLElement;
-    private readonly contentHost: HTMLElement;
+    private readonly target: HTMLDivElement;
     private readonly formattingSettingsService: FormattingSettingsService;
     private readonly converter: Converter;
     private readonly host: powerbi.extensibility.visual.IVisualHost;
@@ -40,7 +39,7 @@ export class Visual implements IVisual {
             y: event.clientY
         };
 
-        const isDataPointTarget = this.hasDataPoint && event.target instanceof Node && this.contentHost.contains(event.target);
+        const isDataPointTarget = this.hasDataPoint && event.target instanceof Node && this.target.contains(event.target);
 
         if (isDataPointTarget && this.dataPointSelectionId) {
             this.selectionManager.showContextMenu([this.dataPointSelectionId], position);
@@ -58,9 +57,6 @@ export class Visual implements IVisual {
         container.classList.add("container", "github");
         options.element.appendChild(container);
         this.target = container;
-        this.contentHost = document.createElement("div");
-        this.contentHost.classList.add("markdown-content");
-        this.target.appendChild(this.contentHost);
         this.converter = new Converter();
         this.converter.setFlavor("github");
         this.events = options.host.eventService;
@@ -133,14 +129,14 @@ export class Visual implements IVisual {
 
         // NEVER assign anything to innerHTML that did not come from the sanitizer.
         // eslint-disable-next-line powerbi-visuals/no-inner-outer-html
-        this.contentHost.innerHTML = sanitizedHtml;
+        this.target.innerHTML = sanitizedHtml;
     }
 
     /**
      * Renders Mermaid diagrams within the target element.
      */
     private async renderMermaidDiagrams(): Promise<void> {
-        const mermaidBlocks = Array.from(this.contentHost.querySelectorAll<HTMLElement>('code.language-mermaid'));
+        const mermaidBlocks = Array.from(this.target.querySelectorAll<HTMLElement>('code.language-mermaid'));
 
         const renderTasks = mermaidBlocks.map(async (block, index) => {
             const mermaidCode = block.textContent;
@@ -175,7 +171,7 @@ export class Visual implements IVisual {
     }
 
     private registerLinkHandlers() {
-        const links = Array.from(this.contentHost.querySelectorAll<HTMLAnchorElement>('a'));
+        const links = Array.from(this.target.querySelectorAll<HTMLAnchorElement>('a'));
 
         for (const link of links) {
             link.addEventListener('click', (event) => {
