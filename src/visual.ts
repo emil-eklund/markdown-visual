@@ -38,13 +38,7 @@ export class Visual implements IVisual {
             y: event.clientY
         };
 
-        const isDataPointTarget = this.dataPointSelectionId !== undefined && event.target instanceof Node && this.target.contains(event.target);
-
-        if (isDataPointTarget) {
-            this.selectionManager.showContextMenu([this.dataPointSelectionId], position);
-        } else {
-            this.selectionManager.showContextMenu([], position);
-        }
+        this.selectionManager.showContextMenu(this.dataPointSelectionId == null ? [] : [this.dataPointSelectionId], position);
     };
 
     constructor(options?: VisualConstructorOptions) {
@@ -201,7 +195,7 @@ export class Visual implements IVisual {
         if (this.formattingSettings == null) {
             throw new Error("Formatting settings not initialized");
         }
-        
+
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
     }
 
