@@ -10,9 +10,11 @@ import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import { VisualFormattingSettingsModel } from "./settings";
 import { Converter } from "showdown";
 import DOMPurify from 'dompurify';
-import mermaid, { RenderResult } from 'mermaid';
+import mermaid from 'mermaid';
 
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+import IPoint = powerbi.extensibility.IPoint;
+import ISelectionId = powerbi.visuals.ISelectionId;
 
 export class Visual implements IVisual {
     private formattingSettings: VisualFormattingSettingsModel;
@@ -20,22 +22,51 @@ export class Visual implements IVisual {
     private localizationManager: ILocalizationManager;
 
     private readonly target: HTMLElement;
+    private readonly contentHost: HTMLElement;
     private readonly formattingSettingsService: FormattingSettingsService;
     private readonly converter: Converter;
     private readonly host: powerbi.extensibility.visual.IVisualHost;
-    private events: IVisualEventService;
+    private readonly events: IVisualEventService;
+    private readonly selectionManager: powerbi.extensibility.ISelectionManager;
+    private dataPointSelectionId?: ISelectionId;
+    private hasDataPoint: boolean;
+
+    private readonly handleContextMenu = (event: MouseEvent) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const position: IPoint = {
+            x: event.clientX,
+            y: event.clientY
+        };
+
+        const isDataPointTarget = this.hasDataPoint && event.target instanceof Node && this.contentHost.contains(event.target);
+
+        if (isDataPointTarget && this.dataPointSelectionId) {
+            this.selectionManager.showContextMenu([this.dataPointSelectionId], position);
+        } else {
+            this.selectionManager.showContextMenu([], position);
+        }
+    };
 
     constructor(options: VisualConstructorOptions) {
         this.host = options.host;
+        this.selectionManager = this.host.createSelectionManager();
         this.localizationManager = options.host.createLocalizationManager();
         this.formattingSettingsService = new FormattingSettingsService(this.localizationManager);
         const container = document.createElement("div");
         container.classList.add("container", "github");
         options.element.appendChild(container);
         this.target = container;
+        this.contentHost = document.createElement("div");
+        this.contentHost.classList.add("markdown-content");
+        this.target.appendChild(this.contentHost);
         this.converter = new Converter();
         this.converter.setFlavor("github");
         this.events = options.host.eventService;
+        this.hasDataPoint = false;
+
+        this.target.addEventListener("contextmenu", this.handleContextMenu);
 
         mermaid.initialize({
             startOnLoad: false
@@ -52,6 +83,8 @@ export class Visual implements IVisual {
     private async handleUpdate(options: VisualUpdateOptions): Promise<void> {
         try {
             this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(VisualFormattingSettingsModel, options.dataViews);
+            this.hasDataPoint = false;
+            this.dataPointSelectionId = undefined;
 
             if (!hasFlag(options.type, powerbi.VisualUpdateType.Data)) {
                 return;
@@ -67,6 +100,9 @@ export class Visual implements IVisual {
             this.target.style.fontFamily = this.formattingSettings.formatCard.fontFamily.value;
             this.target.style.color = this.formattingSettings.formatCard.fontColor.value.value;
             this.target.style.backgroundColor = this.formattingSettings.formatCard.backgroundColor.value.value;
+
+            this.dataPointSelectionId = this.createDataPointSelectionId(options.dataViews?.[0]);
+            this.hasDataPoint = !!this.dataPointSelectionId;
 
             // Convert the markdown to HTML.
             const html = this.converter.makeHtml(value);
@@ -97,14 +133,14 @@ export class Visual implements IVisual {
 
         // NEVER assign anything to innerHTML that did not come from the sanitizer.
         // eslint-disable-next-line powerbi-visuals/no-inner-outer-html
-        this.target.innerHTML = sanitizedHtml;
+        this.contentHost.innerHTML = sanitizedHtml;
     }
 
     /**
      * Renders Mermaid diagrams within the target element.
      */
     private async renderMermaidDiagrams(): Promise<void> {
-        const mermaidBlocks = Array.from(this.target.querySelectorAll<HTMLElement>('code.language-mermaid'));
+        const mermaidBlocks = Array.from(this.contentHost.querySelectorAll<HTMLElement>('code.language-mermaid'));
 
         const renderTasks = mermaidBlocks.map(async (block, index) => {
             const mermaidCode = block.textContent;
@@ -127,7 +163,7 @@ export class Visual implements IVisual {
 
                 // Add the mermaid-diagram class to the parent pre tag so we can center the
                 // diagram and remove background color.
-                mermaidDiv.parentElement.classList.add('mermaid-diagram');
+                mermaidDiv.parentElement?.classList.add('mermaid-diagram');
 
                 renderResult.bindFunctions?.(mermaidDiv);
             } catch (error) {
@@ -139,7 +175,7 @@ export class Visual implements IVisual {
     }
 
     private registerLinkHandlers() {
-        const links = Array.from(this.target.querySelectorAll<HTMLAnchorElement>('a'));
+        const links = Array.from(this.contentHost.querySelectorAll<HTMLAnchorElement>('a'));
 
         for (const link of links) {
             link.addEventListener('click', (event) => {
@@ -162,6 +198,21 @@ export class Visual implements IVisual {
      */
     public getFormattingModel(): powerbi.visuals.FormattingModel {
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
+    }
+
+    private createDataPointSelectionId(dataView: powerbi.DataView | undefined): ISelectionId | undefined {
+        if (!dataView?.metadata?.columns?.length) {
+            return undefined;
+        }
+
+        const selectionIdBuilder = this.host.createSelectionIdBuilder();
+        const firstColumn = dataView.metadata.columns[0];
+
+        if (firstColumn.queryName) {
+            selectionIdBuilder.withMeasure(firstColumn.queryName);
+        }
+
+        return selectionIdBuilder.createSelectionId();
     }
 }
 
