@@ -17,17 +17,17 @@ import IPoint = powerbi.extensibility.IPoint;
 import ISelectionId = powerbi.visuals.ISelectionId;
 
 export class Visual implements IVisual {
-    private formattingSettings: VisualFormattingSettingsModel;
-
-    private localizationManager: ILocalizationManager;
-
-    private readonly target: HTMLElement;
-    private readonly formattingSettingsService: FormattingSettingsService;
-    private readonly converter: Converter;
-    private readonly host: powerbi.extensibility.visual.IVisualHost;
-    private readonly events: IVisualEventService;
-    private readonly selectionManager: powerbi.extensibility.ISelectionManager;
+    
     private dataPointSelectionId: ISelectionId | undefined;
+    private formattingSettings: VisualFormattingSettingsModel | undefined;
+
+    private readonly converter: Converter;
+    private readonly events: IVisualEventService;
+    private readonly formattingSettingsService: FormattingSettingsService;
+    private readonly host: powerbi.extensibility.visual.IVisualHost;
+    private readonly localizationManager: ILocalizationManager;
+    private readonly selectionManager: powerbi.extensibility.ISelectionManager;
+    private readonly target: HTMLElement;
 
     private readonly handleContextMenu = (event: MouseEvent) => {
         event.preventDefault();
@@ -47,7 +47,11 @@ export class Visual implements IVisual {
         }
     };
 
-    constructor(options: VisualConstructorOptions) {
+    constructor(options?: VisualConstructorOptions) {
+        if (options == null) {
+            throw new Error("Visual constructor options are required");
+        }
+
         this.host = options.host;
         this.selectionManager = this.host.createSelectionManager();
         this.localizationManager = options.host.createLocalizationManager();
@@ -138,7 +142,7 @@ export class Visual implements IVisual {
         const renderTasks = mermaidBlocks.map(async (block, index) => {
             const mermaidCode = block.textContent;
 
-            if (mermaidCode.trim().length === 0) {
+            if (mermaidCode == null || mermaidCode.trim().length === 0) {
                 return;
             }
 
@@ -153,6 +157,10 @@ export class Visual implements IVisual {
                 mermaidDiv.innerHTML = renderResult.svg;
 
                 block.replaceWith(mermaidDiv);
+
+                if (mermaidDiv.parentElement == null) {
+                    throw new Error("Mermaid diagram does not have a parent element");
+                }
 
                 // Add the mermaid-diagram class to the parent pre tag so we can center the
                 // diagram and remove background color.
@@ -190,6 +198,10 @@ export class Visual implements IVisual {
      * This method is called once every time we open properties pane or when the user edit any format property. 
      */
     public getFormattingModel(): powerbi.visuals.FormattingModel {
+        if (this.formattingSettings == null) {
+            throw new Error("Formatting settings not initialized");
+        }
+        
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
     }
 
