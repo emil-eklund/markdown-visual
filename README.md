@@ -26,15 +26,24 @@ Markdown-visual is a simple markdown visualizer for Power BI. It uses the showdo
 
 ### Installation
 
-To use markdown-visual in your Power BI reports, follow these steps:
+To use markdown-visual in your Power BI reports, you have two options:
+
+**Option 1: Install from Microsoft AppSource (Recommended)**
+
+The visual is now available on [Microsoft AppSource](https://appsource.microsoft.com/en-gb/product/power-bi-visuals/aimplanab1657007728164.aimplan-05?tab=Overview).
+
+1. In Power BI Desktop, click on "Insert" > "More visuals" > "Get more visuals."
+2. Search for "Markdown Visual" in AppSource.
+3. Click "Add" to install the visual to your Power BI Desktop.
+4. Add the visual to your report and add a field that contains markdown. Please note that you might have to change the aggregation to "First" if nothing is shown.
+
+**Option 2: Install from GitHub Releases**
 
 1. Download the latest release from the [GitHub releases page](https://github.com/emil-eklund/markdown-visual/releases/latest).
-
 2. Add the markdown-visual to your report:
    - Click on "Insert" > "Visual."
    - Choose "Import a custom visual."
    - Select the downloaded .pbiviz file.
-
 3. Add the visual to your report and add a field that contains markdown. Please note that you might have to change the aggregation to "First" if nothing is shown.
 
 
