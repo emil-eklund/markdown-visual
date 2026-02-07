@@ -32,7 +32,7 @@
         "powerbi-visuals-webpack-plugin": "^4.3.1",
         "ts-loader": "^9.5.4",
         "typescript": "^5.8.3",
-        "webpack": "^5.101.3",
+        "webpack": "^5.105.0",
         "webpack-bundle-analyzer": "^4.10.2",
         "webpack-cli": "^6.0.1",
         "webpack-dev-server": "^5.2.2",
